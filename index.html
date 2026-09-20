@@ -229,6 +229,12 @@
             line-height: 1.5;
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
         .rating-options {
             display: flex;
             gap: 10px;
@@ -311,7 +317,7 @@
             color: white;
             font-size: 0.9rem;
             outline: none;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .text-input-field:focus {
@@ -395,6 +401,9 @@
         }
 
         @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
             .profil-table th, 
             .profil-table td {
                 display: block;
@@ -503,10 +512,36 @@
 
             <form id="kuesionerForm">
                 
-                <!-- INPUT EMAIL PENGISI -->
-                <div class="question-item" id="email_container">
-                    <div class="question-title">Alamat Email Anda: <span style="color: #f43f5e;">*</span></div>
-                    <input type="email" id="user_email" class="text-input-field" placeholder="Masukkan email aktif Anda (contoh: nama@gmail.com)" required>
+                <!-- IDENTITAS PENGISI -->
+                <div class="question-item" id="identity_container">
+                    <div class="question-title" style="font-weight: 600; color: #38bdf8;">Identitas Pengisi Kuesioner:</div>
+                    
+                    <div class="form-grid">
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">Nama Lengkap <span style="color: #f43f5e;">*</span></label>
+                            <input type="text" id="user_nama" class="text-input-field" placeholder="Masukkan Nama Lengkap" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">NIM <span style="color: #f43f5e;">*</span></label>
+                            <input type="text" id="user_nim" class="text-input-field" placeholder="Masukkan NIM" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">Kelas <span style="color: #f43f5e;">*</span></label>
+                            <input type="text" id="user_kelas" class="text-input-field" placeholder="Contoh: 01TPLK005" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">Program Studi <span style="color: #f43f5e;">*</span></label>
+                            <input type="text" id="user_prodi" class="text-input-field" placeholder="Contoh: Teknik Informatika" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">Reguler <span style="color: #f43f5e;">*</span></label>
+                            <input type="text" id="user_reguler" class="text-input-field" placeholder="Contoh: CK (Kamis)" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85rem; color: #cbd5e1;">Alamat Email <span style="color: #f43f5e;">*</span></label>
+                            <input type="email" id="user_email" class="text-input-field" placeholder="nama@email.com" required>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="question-item" id="q1_container">
@@ -719,17 +754,13 @@
             return;
         }
 
-        // Ambil Nilai Email
+        // Ambil Data Identitas
+        const userNama = document.getElementById('user_nama').value.trim();
+        const userNim = document.getElementById('user_nim').value.trim();
+        const userKelas = document.getElementById('user_kelas').value.trim();
+        const userProdi = document.getElementById('user_prodi').value.trim();
+        const userReguler = document.getElementById('user_reguler').value.trim();
         const userEmail = document.getElementById('user_email').value.trim();
-        const emailContainer = document.getElementById('email_container');
-
-        if (!userEmail) {
-            emailContainer.classList.add('has-error');
-            alert('Silakan masukkan email Anda.');
-            return;
-        } else {
-            emailContainer.classList.remove('has-error');
-        }
 
         let isValid = true;
         let totalScore = 0;
@@ -737,9 +768,7 @@
         let ratings = {};
 
         document.querySelectorAll('.question-item').forEach(item => {
-            if (item.id !== 'email_container') {
-                item.classList.remove('has-error');
-            }
+            item.classList.remove('has-error');
         });
 
         for (let i = 1; i <= 9; i++) {
@@ -777,11 +806,16 @@
         submitBtn.innerText = 'Mengirim...';
 
         try {
-            // Pengiriman ke Supabase
+            // Pengiriman data ke Supabase
             const { data, error } = await _supabase
                 .from('kuesioner_responses')
                 .insert([
                     {
+                        nama: userNama,
+                        nim: userNim,
+                        kelas: userKelas,
+                        prodi: userProdi,
+                        reguler: userReguler,
                         email: userEmail,
                         q1: ratings.q1,
                         q2: ratings.q2,
