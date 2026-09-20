@@ -1,0 +1,5 @@
+.env
+.env.local
+config/supabase.js
+.DS_Store
+Thumbs.db
