@@ -426,6 +426,7 @@
 
 <div class="container">
 
+    <!-- HALAMAN PROFIL -->
     <div class="page-section active" id="halaman-profil">
         <h1 class="main-title">Profil Saya</h1>
         
@@ -475,6 +476,7 @@
         </div>
     </div>
 
+    <!-- HALAMAN KUESIONER -->
     <div class="page-section" id="halaman-kuisoner">
         <h1 class="main-title">Kuesioner Evaluasi</h1>
 
@@ -501,6 +503,12 @@
 
             <form id="kuesionerForm">
                 
+                <!-- INPUT EMAIL PENGISI -->
+                <div class="question-item" id="email_container">
+                    <div class="question-title">Alamat Email Anda: <span style="color: #f43f5e;">*</span></div>
+                    <input type="email" id="user_email" class="text-input-field" placeholder="Masukkan email aktif Anda (contoh: nama@gmail.com)" required>
+                </div>
+
                 <div class="question-item" id="q1_container">
                     <div class="question-title">1. Desain & Animasi: Desain visual web (termasuk efek gradient background bergerak dan kartu transparan/glassmorphism) terlihat menarik dan modern.</div>
                     <div class="rating-options">
@@ -636,6 +644,7 @@
 
 </div>
 
+<!-- MODAL HASIL -->
 <div class="modal-overlay" id="resultModal">
     <div class="modal-content">
         <div class="modal-icon">🎉</div>
@@ -656,11 +665,6 @@
 </div>
 
 <script>
-    // Konfigurasi Supabase
-    const SUPABASE_URL = 'https://dspshuhlkkpcsvjueuxs.supabase.co/rest/v1/';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcHNodWhsa2twY3N2anVldXhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjUyNjYsImV4cCI6MjEwNTUwMTI2Nn0.GNoep5OvJK4CNGORXezakWef6CDk91hdMdTbaLGLrnk';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     document.addEventListener("DOMContentLoaded", function() {
         periksaStatusPengisian();
     });
@@ -715,13 +719,27 @@
             return;
         }
 
+        // Ambil Nilai Email
+        const userEmail = document.getElementById('user_email').value.trim();
+        const emailContainer = document.getElementById('email_container');
+
+        if (!userEmail) {
+            emailContainer.classList.add('has-error');
+            alert('Silakan masukkan email Anda.');
+            return;
+        } else {
+            emailContainer.classList.remove('has-error');
+        }
+
         let isValid = true;
         let totalScore = 0;
         let answeredLikertCount = 0;
         let ratings = {};
 
         document.querySelectorAll('.question-item').forEach(item => {
-            item.classList.remove('has-error');
+            if (item.id !== 'email_container') {
+                item.classList.remove('has-error');
+            }
         });
 
         for (let i = 1; i <= 9; i++) {
@@ -759,10 +777,12 @@
         submitBtn.innerText = 'Mengirim...';
 
         try {
+            // Pengiriman ke Supabase
             const { data, error } = await _supabase
                 .from('kuesioner_responses')
                 .insert([
                     {
+                        email: userEmail,
                         q1: ratings.q1,
                         q2: ratings.q2,
                         q3: ratings.q3,
@@ -813,6 +833,11 @@
         
         pindahHalaman('halaman-kuisoner');
     }
+
+    // --- MENGHUBUNGKAN KE SUPABASE (Ubah 2 string di bawah ini) ---
+    const SUPABASE_URL = 'https://URL_PROJECT_KAMU.supabase.co';
+    const SUPABASE_ANON_KEY = 'ANON_KEY_KAMU';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 
 </body>
