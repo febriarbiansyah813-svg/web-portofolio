@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil & Kuesioner Evaluasi - Mohamad Febri Arbiansyah</title>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -638,7 +640,7 @@
     <div class="modal-content">
         <div class="modal-icon">🎉</div>
         <h2 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 5px;">Terima Kasih!</h2>
-        <p style="color: #cbd5e1; font-size: 0.95rem;">Kuesioner Anda berhasil dikirimkan.</p>
+        <p style="color: #cbd5e1; font-size: 0.95rem;">Kuesioner Anda berhasil dikirimkan ke database.</p>
         
         <div class="score-box">
             <p style="color: #38bdf8; font-size: 0.9rem; font-weight: 500;">Detail Penilaian Anda:</p>
@@ -654,6 +656,11 @@
 </div>
 
 <script>
+    // Konfigurasi Supabase
+    const SUPABASE_URL = 'https://dspshuhlkkpcsvjueuxs.supabase.co/rest/v1/';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcHNodWhsa2twY3N2anVldXhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjUyNjYsImV4cCI6MjEwNTUwMTI2Nn0.GNoep5OvJK4CNGORXezakWef6CDk91hdMdTbaLGLrnk';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     document.addEventListener("DOMContentLoaded", function() {
         periksaStatusPengisian();
     });
@@ -700,7 +707,7 @@
         }
     }
 
-    document.getElementById('kuesionerForm').addEventListener('submit', function(e) {
+    document.getElementById('kuesionerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         if (localStorage.getItem('kuesioner_selesai')) {
@@ -711,6 +718,7 @@
         let isValid = true;
         let totalScore = 0;
         let answeredLikertCount = 0;
+        let ratings = {};
 
         document.querySelectorAll('.question-item').forEach(item => {
             item.classList.remove('has-error');
@@ -724,7 +732,9 @@
                 isValid = false;
                 if (container) container.classList.add('has-error');
             } else {
-                totalScore += parseInt(selectedRating.value);
+                const val = parseInt(selectedRating.value);
+                ratings[`q${i}`] = val;
+                totalScore += val;
                 answeredLikertCount++;
             }
         }
@@ -738,27 +748,63 @@
         }
 
         const maxScore = answeredLikertCount * 5;
-        const averageScore = (totalScore / answeredLikertCount).toFixed(1);
+        const averageScore = parseFloat((totalScore / answeredLikertCount).toFixed(1));
         const percentage = ((totalScore / maxScore) * 100).toFixed(0);
 
-        document.getElementById('totalScoreText').innerText = `${totalScore} / ${maxScore}`;
-        document.getElementById('percentageText').innerText = `${percentage}%`;
-        document.getElementById('averageScoreText').innerText = `${averageScore} / 5`;
-        
-        const feedbackElem = document.getElementById('feedbackCategory');
-        if (averageScore >= 4.5) {
-            feedbackElem.innerHTML = "Luar biasa! Penilaian Anda sangat positif. Terima kasih atas masukan dan dukungan Anda terhadap web profil ini!";
-        } else if (averageScore >= 3.5) {
-            feedbackElem.innerHTML = "Terima kasih banyak! Penilaian Anda sangat membantu untuk penyempurnaan desain dan informasi di masa mendatang.";
-        } else {
-            feedbackElem.innerHTML = "Terima kasih atas penilaian dan evaluasinya. Masukan Anda akan dijadikan bahan evaluasi utama untuk pembaruan web profil ini.";
+        const selectedCheckboxes = Array.from(document.querySelectorAll('input[name="q10_option"]:checked')).map(cb => cb.value);
+        const catatanQ10 = document.getElementById('q10_catatan').value;
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Mengirim...';
+
+        try {
+            const { data, error } = await _supabase
+                .from('kuesioner_responses')
+                .insert([
+                    {
+                        q1: ratings.q1,
+                        q2: ratings.q2,
+                        q3: ratings.q3,
+                        q4: ratings.q4,
+                        q5: ratings.q5,
+                        q6: ratings.q6,
+                        q7: ratings.q7,
+                        q8: ratings.q8,
+                        q9: ratings.q9,
+                        q10_options: selectedCheckboxes,
+                        q10_catatan: catatanQ10,
+                        total_score: totalScore,
+                        average_score: averageScore
+                    }
+                ]);
+
+            if (error) throw error;
+
+            document.getElementById('totalScoreText').innerText = `${totalScore} / ${maxScore}`;
+            document.getElementById('percentageText').innerText = `${percentage}%`;
+            document.getElementById('averageScoreText').innerText = `${averageScore} / 5`;
+            
+            const feedbackElem = document.getElementById('feedbackCategory');
+            if (averageScore >= 4.5) {
+                feedbackElem.innerHTML = "Luar biasa! Penilaian Anda sangat positif. Terima kasih atas masukan dan dukungan Anda terhadap web profil ini!";
+            } else if (averageScore >= 3.5) {
+                feedbackElem.innerHTML = "Terima kasih banyak! Penilaian Anda sangat membantu untuk penyempurnaan desain dan informasi di masa mendatang.";
+            } else {
+                feedbackElem.innerHTML = "Terima kasih atas penilaian dan evaluasinya. Masukan Anda akan dijadikan bahan evaluasi utama untuk pembaruan web profil ini.";
+            }
+
+            localStorage.setItem('kuesioner_selesai', 'true');
+            disableForm();
+
+            const modal = document.getElementById('resultModal');
+            modal.classList.add('active');
+
+        } catch (err) {
+            alert('Gagal mengirim data: ' + err.message);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Kirim Kuesioner';
         }
-
-        localStorage.setItem('kuesioner_selesai', 'true');
-        disableForm();
-
-        const modal = document.getElementById('resultModal');
-        modal.classList.add('active');
     });
 
     function tutupModal() {
