@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil & Kuesioner Evaluasi - Mohamad Febri Arbiansyah</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81, #4c1d95);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px 15px;
+            color: #f8fafc;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .page-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1.main-title {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            padding: 35px;
+            color: #f8fafc;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            margin-bottom: 25px;
+        }
+
+        .glass-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #38bdf8;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .profil-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .profil-table th, 
+        .profil-table td {
+            padding: 14px 10px;
+            vertical-align: top;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profil-table tr:last-child th,
+        .profil-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .profil-table th {
+            width: 25%;
+            color: #38bdf8;
+            font-weight: 600;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .profil-table td {
+            color: #cbd5e1;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .profil-table ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .profil-table ul li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        .profil-table ul li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #38bdf8;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .btn-navigation-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #0284c7, #7c3aed);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+            background: linear-gradient(135deg, #0369a1, #6d28d9);
+        }
+
+        .btn-action.btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-action.btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .instruction-box {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid #38bdf8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .likert-scale-guide {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #38bdf8;
+        }
+
+        .likert-scale-guide span {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .question-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-item.has-error {
+            border-color: #f43f5e;
+        }
+
+        .question-title {
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .rating-options {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            max-width: 450px;
+        }
+
+        .rating-btn {
+            flex: 1;
+            position: relative;
+        }
+
+        .rating-btn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            margin: 0;
+            z-index: 2;
+        }
+
+        .rating-btn label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #f8fafc;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rating-btn input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: #0f172a;
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+            font-weight: 700;
+        }
+
+        .rating-btn:hover label {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.93rem;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #38bdf8;
+            cursor: pointer;
+        }
+
+        .text-input-field {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            margin-top: 8px;
+        }
+
+        .text-input-field:focus {
+            border-color: #38bdf8;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: rgba(30, 27, 75, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .score-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .score-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #38bdf8, #a855f7);
+            color: #0f172a;
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 6px 20px;
+            border-radius: 50px;
+            margin-top: 5px;
+        }
+
+        .completed-banner {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .profil-table th, 
+            .profil-table td {
+                display: block;
+                width: 100%;
+                padding: 6px 0;
+            }
+            .profil-table th {
+                margin-top: 10px;
+                border-bottom: none;
+            }
+            .profil-table td {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 12px;
+            }
+            .glass-card {
+                padding: 22px;
+            }
+            .rating-options {
+                gap: 5px;
+            }
+            .rating-btn label {
+                height: 38px;
+                font-size: 0.88rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="page-section active" id="halaman-profil">
+        <h1 class="main-title">Profil Saya</h1>
+        
+        <div class="glass-card" id="profil-card">
+            <h2>NAMA   : MOHAMAD FEBRI ARBIANSYAH</h2>
+            <h2>KELAS  : 01TPLK005</h2>
+            <h2>PRODI  : TEKNIK INFORMATIKA ( S1 ) </h2>
+            <h2>REG    : CK ( KAMIS ) </h2>
+            <p class="subtitle">IT Full Stack Developer | Ex-Network Engineer</p>
+
+            <table class="profil-table">
+                <tr>
+                    <th>Deskripsi</th>
+                    <td>
+                        Lulusan SMK jurusan Teknik Komputer dan Jaringan (TKJ) yang memiliki fondasi kuat dalam infrastruktur jaringan dan pengembangan perangkat lunak. Saat ini aktif menempuh pendidikan S1 Teknik Informatika di Universitas Pamulang (Reguler CK).<br><br>
+                        Berpengalaman kerja sebagai Network Engineer di salah satu perusahaan di Jakarta, yang memperkuat pemahaman mendalam tentang arsitektur jaringan, sistem keamanan, dan penanganan masalah teknis (troubleshooting). Saat ini berfokus karier sebagai IT Full Stack Developer, mengombinasikan keahlian front-end dan back-end untuk merancang serta mengimplementasikan solusi aplikasi yang responsif, efisien, dan andal.
+                    </td>
+                </tr>
+                <tr>
+                    <th>Pengalaman Kerja</th>
+                    <td>Network Engineer (Pengelolaan & Pemeliharaan Jaringan Perusahaan)</td>
+                </tr>
+                <tr>
+                    <th>Posisi Saat Ini</th>
+                    <td>Full Stack Developer (Pengembangan Sistem & Aplikasi End-to-End)</td>
+                </tr>
+                <tr>
+                    <th>Pendidikan</th>
+                    <td>
+                        <ul>
+                            <li>S1 Teknik Informatika – Universitas Pamulang (Sedang Menempuh)</li>
+                            <li>SMK Teknik Komputer dan Jaringan (TKJ)</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Keahlian Utama</th>
+                    <td>Software Development (Front-End-Back-End), Networking & Infrastructure, System Troubleshooting</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="btn-navigation-container">
+            <button class="btn-action" onclick="pindahHalaman('halaman-kuisoner')">
+                Selanjutnya -> 
+            </button>
+        </div>
+    </div>
+
+    <div class="page-section" id="halaman-kuisoner">
+        <h1 class="main-title">Kuesioner Evaluasi</h1>
+
+        <div class="glass-card">
+            <h2 style="font-size: 1.4rem; margin-bottom: 8px;">Silahkan Isi Kuesioner Ini</h2>
+            <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 15px;">
+                Mohon luangkan waktu sejenak untuk memberikan penilaian secara objektif mengenai tampilan dan kualitas informasi pada halaman profil web ini.
+            </p>
+
+            <div id="alreadyFilledBanner" class="completed-banner" style="display: none;">
+                ⚠️ <strong>Perhatian:</strong> Anda sudah pernah mengisi kuesioner ini. Anda tidak dapat mengirimkan respons ulang.
+            </div>
+
+            <div class="instruction-box">
+                <strong>Tujuan:</strong> Mengetahui respon pengguna terhadap tampilan, kejelasan informasi karier, dan kemudahan membaca (usability) pada halaman profil web.
+                <div class="likert-scale-guide">
+                    <span>1 = Sangat Tidak Setuju</span>
+                    <span>2 = Tidak Setuju</span>
+                    <span>3 = Netral</span>
+                    <span>4 = Setuju</span>
+                    <span>5 = Sangat Setuju</span>
+                </div>
+            </div>
+
+            <form id="kuesionerForm">
+                
+                <div class="question-item" id="q1_container">
+                    <div class="question-title">1. Desain & Animasi: Desain visual web (termasuk efek gradient background bergerak dan kartu transparan/glassmorphism) terlihat menarik dan modern.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q1" value="1" id="q1_1"><label for="q1_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q1" value="2" id="q1_2"><label for="q1_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q1" value="3" id="q1_3"><label for="q1_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q1" value="4" id="q1_4"><label for="q1_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q1" value="5" id="q1_5"><label for="q1_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q2_container">
+                    <div class="question-title">2. Keterbacaan Teks: Kombinasi warna teks dan latar belakang terasa nyaman di mata serta mudah dibaca.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q2" value="1" id="q2_1"><label for="q2_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q2" value="2" id="q2_2"><label for="q2_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q2" value="3" id="q2_3"><label for="q2_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q2" value="4" id="q2_4"><label for="q2_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q2" value="5" id="q2_5"><label for="q2_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q3_container">
+                    <div class="question-title">3. Tata Letak (Layout): Penataan posisi judul, sub-judul, dan tabel profil tersusun secara rapi dan konsisten.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q3" value="1" id="q3_1"><label for="q3_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q3" value="2" id="q3_2"><label for="q3_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q3" value="3" id="q3_3"><label for="q3_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q3" value="4" id="q3_4"><label for="q3_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q3" value="5" id="q3_5"><label for="q3_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q4_container">
+                    <div class="question-title">4. Responsivitas: Tampilan web dapat menyesuaikan diri dengan baik di berbagai ukuran layar (HP / Laptop / Tablet).</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q4" value="1" id="q4_1"><label for="q4_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q4" value="2" id="q4_2"><label for="q4_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q4" value="3" id="q4_3"><label for="q4_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q4" value="4" id="q4_4"><label for="q4_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q4" value="5" id="q4_5"><label for="q4_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q5_container">
+                    <div class="question-title">5. Kejelasan Informasi Profil: Latar belakang pendidikan dan transisi karier dari Network Engineer ke Full Stack Developer tersampaikan dengan sangat jelas.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q5" value="1" id="q5_1"><label for="q5_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q5" value="2" id="q5_2"><label for="q5_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q5" value="3" id="q5_3"><label for="q5_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q5" value="4" id="q5_4"><label for="q5_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q5" value="5" id="q5_5"><label for="q5_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q6_container">
+                    <div class="question-title">6. Kejelasan Keahlian Utama: Ringkasan keahlian utama (Software Development, Networking, Troubleshooting) mudah dipahami.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q6" value="1" id="q6_1"><label for="q6_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q6" value="2" id="q6_2"><label for="q6_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q6" value="3" id="q6_3"><label for="q6_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q6" value="4" id="q6_4"><label for="q6_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q6" value="5" id="q6_5"><label for="q6_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q7_container">
+                    <div class="question-title">7. Format Penyajian Tabel: Penyajian ringkasan profil dalam format tabel memudahkan pembaca dalam memindai (scan) informasi penting.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q7" value="1" id="q7_1"><label for="q7_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q7" value="2" id="q7_2"><label for="q7_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q7" value="3" id="q7_3"><label for="q7_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q7" value="4" id="q7_4"><label for="q7_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q7" value="5" id="q7_5"><label for="q7_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q8_container">
+                    <div class="question-title">8. Kesan Profesionalisme: Halaman profil ini memberikan kesan yang profesional untuk sebuah portofolio kandidat IT.</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q8" value="1" id="q8_1"><label for="q8_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q8" value="2" id="q8_2"><label for="q8_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q8" value="3" id="q8_3"><label for="q8_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q8" value="4" id="q8_4"><label for="q8_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q8" value="5" id="q8_5"><label for="q8_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q9_container">
+                    <div class="question-title">9. Kecepatan Memahami: Pengguna dapat memahami siapa pemilik profil dan kualifikasinya secara cepat (dibawah 1 menit).</div>
+                    <div class="rating-options">
+                        <div class="rating-btn"><input type="radio" name="q9" value="1" id="q9_1"><label for="q9_1">1</label></div>
+                        <div class="rating-btn"><input type="radio" name="q9" value="2" id="q9_2"><label for="q9_2">2</label></div>
+                        <div class="rating-btn"><input type="radio" name="q9" value="3" id="q9_3"><label for="q9_3">3</label></div>
+                        <div class="rating-btn"><input type="radio" name="q9" value="4" id="q9_4"><label for="q9_4">4</label></div>
+                        <div class="rating-btn"><input type="radio" name="q9" value="5" id="q9_5"><label for="q9_5">5</label></div>
+                    </div>
+                </div>
+
+                <div class="question-item" id="q10_container">
+                    <div class="question-title">10. Rekomendasi Fitur Tambahan: Fitur/elemen apa yang perlu ditambahkan agar web profil ini semakin lengkap? (Pilih satu atau lebih)</div>
+                    
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="q10_option" value="Showcase Portofolio Proyek"> Showcase Portofolio Proyek / Aplikasi
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="q10_option" value="Tombol Kontak Langsung"> Tombol Kontak Langsung (WhatsApp/LinkedIn)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="q10_option" value="Fitur Unduh CV"> Fitur Unduh CV (PDF)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="q10_option" value="Mode Terang / Gelap"> Toggle Light/Dark Mode
+                        </label>
+                    </div>
+
+                    <input type="text" class="text-input-field" id="q10_catatan" placeholder="Saran/Masukan tambahan lainnya (opsional)...">
+                </div>
+
+                <div class="btn-navigation-container" style="gap: 15px; margin-top: 30px;">
+                    <button type="button" class="btn-action btn-secondary" onclick="pindahHalaman('halaman-profil')">
+                        <- Kembali ke Profil
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn-action">
+                        Kirim Kuesioner
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-overlay" id="resultModal">
+    <div class="modal-content">
+        <div class="modal-icon">🎉</div>
+        <h2 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 5px;">Terima Kasih!</h2>
+        <p style="color: #cbd5e1; font-size: 0.95rem;">Kuesioner Anda berhasil dikirimkan.</p>
+        
+        <div class="score-box">
+            <p style="color: #38bdf8; font-size: 0.9rem; font-weight: 500;">Detail Penilaian Anda:</p>
+            <p style="color: #e2e8f0; font-size: 0.95rem; margin-top: 5px;">Total Skor: <strong id="totalScoreText" style="color: #38bdf8;">0 / 45</strong></p>
+            <p style="color: #e2e8f0; font-size: 0.95rem; margin-top: 2px;">Nilai Akhir: <strong id="percentageText" style="color: #38bdf8;">0%</strong></p>
+            <div class="score-badge" id="averageScoreText">0.0 / 5</div>
+        </div>
+
+        <p id="feedbackCategory" style="color: #e2e8f0; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;"></p>
+
+        <button class="btn-action" onclick="tutupModal()">Tutup & Kembali ke Profil</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        periksaStatusPengisian();
+    });
+
+    function periksaStatusPengisian() {
+        const sudahMengisi = localStorage.getItem('kuesioner_selesai');
+        if (sudahMengisi) {
+            pindahHalaman('halaman-kuisoner');
+            disableForm();
+        }
+    }
+
+    function disableForm() {
+        const form = document.getElementById('kuesionerForm');
+        const elements = form.querySelectorAll('input, button[type="submit"]');
+        
+        elements.forEach(el => {
+            el.disabled = true;
+        });
+
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+            submitBtn.innerText = 'Sudah Diisi';
+        }
+
+        const banner = document.getElementById('alreadyFilledBanner');
+        if (banner) {
+            banner.style.display = 'block';
+        }
+    }
+
+    function pindahHalaman(idHalaman) {
+        const sections = document.querySelectorAll('.page-section');
+        sections.forEach(sec => {
+            sec.classList.remove('active');
+        });
+
+        const targetSection = document.getElementById(idHalaman);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    document.getElementById('kuesionerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (localStorage.getItem('kuesioner_selesai')) {
+            alert('Anda sudah pernah mengisi kuesioner ini.');
+            return;
+        }
+
+        let isValid = true;
+        let totalScore = 0;
+        let answeredLikertCount = 0;
+
+        document.querySelectorAll('.question-item').forEach(item => {
+            item.classList.remove('has-error');
+        });
+
+        for (let i = 1; i <= 9; i++) {
+            const selectedRating = document.querySelector(`input[name="q${i}"]:checked`);
+            const container = document.getElementById(`q${i}_container`);
+
+            if (!selectedRating) {
+                isValid = false;
+                if (container) container.classList.add('has-error');
+            } else {
+                totalScore += parseInt(selectedRating.value);
+                answeredLikertCount++;
+            }
+        }
+
+        if (!isValid) {
+            const firstError = document.querySelector('.has-error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        const maxScore = answeredLikertCount * 5;
+        const averageScore = (totalScore / answeredLikertCount).toFixed(1);
+        const percentage = ((totalScore / maxScore) * 100).toFixed(0);
+
+        document.getElementById('totalScoreText').innerText = `${totalScore} / ${maxScore}`;
+        document.getElementById('percentageText').innerText = `${percentage}%`;
+        document.getElementById('averageScoreText').innerText = `${averageScore} / 5`;
+        
+        const feedbackElem = document.getElementById('feedbackCategory');
+        if (averageScore >= 4.5) {
+            feedbackElem.innerHTML = "Luar biasa! Penilaian Anda sangat positif. Terima kasih atas masukan dan dukungan Anda terhadap web profil ini!";
+        } else if (averageScore >= 3.5) {
+            feedbackElem.innerHTML = "Terima kasih banyak! Penilaian Anda sangat membantu untuk penyempurnaan desain dan informasi di masa mendatang.";
+        } else {
+            feedbackElem.innerHTML = "Terima kasih atas penilaian dan evaluasinya. Masukan Anda akan dijadikan bahan evaluasi utama untuk pembaruan web profil ini.";
+        }
+
+        localStorage.setItem('kuesioner_selesai', 'true');
+        disableForm();
+
+        const modal = document.getElementById('resultModal');
+        modal.classList.add('active');
+    });
+
+    function tutupModal() {
+        const modal = document.getElementById('resultModal');
+        modal.classList.remove('active');
+        
+        pindahHalaman('halaman-kuisoner');
+    }
+</script>
+
+</body>
+</html>
