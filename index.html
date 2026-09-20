@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil & Kuesioner Evaluasi - Mohamad Febri Arbiansyah</title>
-    <!-- Supabase JS Client -->
+    
+    <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- File Konfigurasi Supabase (Berisi URL & ANON_KEY) -->
+    <script src="config/supabase.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -18,14 +23,11 @@
 
         body {
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81, #4c1d95);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            padding: 20px 15px;
             color: #f8fafc;
+            display: flex;
         }
 
         @keyframes gradientBG {
@@ -34,10 +36,82 @@
             100% { background-position: 0% 50%; }
         }
 
-        .container {
+        /* LAYOUT UTAMA */
+        .app-layout {
+            display: flex;
             width: 100%;
-            max-width: 850px;
-            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR KIRI */
+        .sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .profile-brand {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .profile-brand h3 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .profile-brand p {
+            font-size: 0.75rem;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item button:hover,
+        .nav-item button.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border-left: 4px solid #38bdf8;
+        }
+
+        /* KONTEN UTAMA */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            max-width: 900px;
         }
 
         .page-section {
@@ -55,12 +129,11 @@
 
         h1.main-title {
             color: #ffffff;
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 25px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            text-align: center;
         }
 
         .glass-card {
@@ -76,7 +149,7 @@
         }
 
         .glass-card h2 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             background: linear-gradient(90deg, #38bdf8, #c084fc);
             -webkit-background-clip: text;
@@ -145,6 +218,40 @@
             line-height: 1;
         }
 
+        /* GRID PORTOFOLIO & TECH STACK */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .card-item h3 { color: #38bdf8; margin-bottom: 10px; }
+        .card-item p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
+
+        .tech-badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tech-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* FORM & KUESIONER STYLES */
         .btn-navigation-container {
             display: flex;
             justify-content: center;
@@ -325,6 +432,7 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
+        /* MODAL */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -365,10 +473,7 @@
             transform: scale(1);
         }
 
-        .modal-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
+        .modal-icon { font-size: 3rem; margin-bottom: 10px; }
 
         .score-box {
             background: rgba(255, 255, 255, 0.05);
@@ -400,282 +505,363 @@
             text-align: center;
         }
 
-        @media (max-width: 600px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .profil-table th, 
-            .profil-table td {
-                display: block;
+        /* RESPONSIVE MOBILE */
+        @media (max-width: 768px) {
+            .app-layout { flex-direction: column; }
+            .sidebar {
                 width: 100%;
-                padding: 6px 0;
-            }
-            .profil-table th {
-                margin-top: 10px;
-                border-bottom: none;
-            }
-            .profil-table td {
+                height: auto;
+                position: relative;
+                padding: 15px;
+                border-right: none;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding-bottom: 12px;
             }
-            .glass-card {
-                padding: 22px;
-            }
-            .rating-options {
-                gap: 5px;
-            }
-            .rating-btn label {
-                height: 38px;
-                font-size: 0.88rem;
-            }
+            .nav-menu { flex-direction: row; overflow-x: auto; padding-bottom: 5px; }
+            .nav-item button { white-space: nowrap; font-size: 0.8rem; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .profil-table th, .profil-table td { display: block; width: 100%; padding: 6px 0; }
+            .profil-table th { margin-top: 10px; border-bottom: none; }
+            .profil-table td { border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app-layout">
 
-    <!-- HALAMAN PROFIL -->
-    <div class="page-section active" id="halaman-profil">
-        <h1 class="main-title">Profil Saya</h1>
-        
-        <div class="glass-card" id="profil-card">
-            <h2>NAMA   : MOHAMAD FEBRI ARBIANSYAH</h2>
-            <h2>KELAS  : 01TPLK005</h2>
-            <h2>PRODI  : TEKNIK INFORMATIKA ( S1 ) </h2>
-            <h2>REG    : CK ( KAMIS ) </h2>
-            <p class="subtitle">IT Full Stack Developer | Ex-Network Engineer</p>
-
-            <table class="profil-table">
-                <tr>
-                    <th>Deskripsi</th>
-                    <td>
-                        Lulusan SMK jurusan Teknik Komputer dan Jaringan (TKJ) yang memiliki fondasi kuat dalam infrastruktur jaringan dan pengembangan perangkat lunak. Saat ini aktif menempuh pendidikan S1 Teknik Informatika di Universitas Pamulang (Reguler CK).<br><br>
-                        Berpengalaman kerja sebagai Network Engineer di salah satu perusahaan di Jakarta, yang memperkuat pemahaman mendalam tentang arsitektur jaringan, sistem keamanan, dan penanganan masalah teknis (troubleshooting). Saat ini berfokus karier sebagai IT Full Stack Developer, mengombinasikan keahlian front-end dan back-end untuk merancang serta mengimplementasikan solusi aplikasi yang responsif, efisien, dan andal.
-                    </td>
-                </tr>
-                <tr>
-                    <th>Pengalaman Kerja</th>
-                    <td>Network Engineer (Pengelolaan & Pemeliharaan Jaringan Perusahaan)</td>
-                </tr>
-                <tr>
-                    <th>Posisi Saat Ini</th>
-                    <td>Full Stack Developer (Pengembangan Sistem & Aplikasi End-to-End)</td>
-                </tr>
-                <tr>
-                    <th>Pendidikan</th>
-                    <td>
-                        <ul>
-                            <li>S1 Teknik Informatika – Universitas Pamulang (Sedang Menempuh)</li>
-                            <li>SMK Teknik Komputer dan Jaringan (TKJ)</li>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Keahlian Utama</th>
-                    <td>Software Development (Front-End-Back-End), Networking & Infrastructure, System Troubleshooting</td>
-                </tr>
-            </table>
+    <!-- SIDEBAR KIRI -->
+    <aside class="sidebar">
+        <div class="profile-brand">
+            <h3>Febri Arbiansyah</h3>
+            <p>Full Stack Dev / Ex-NE</p>
         </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <button class="active" onclick="switchTab('halaman-profil', this)">🏠 Ringkasan Profil</button>
+            </li>
+            <li class="nav-item">
+                <button onclick="switchTab('menu-proyek', this)">📁 Proyek</button>
+            </li>
+            <li class="nav-item">
+                <button onclick="switchTab('menu-tech', this)">⚡ Tech Stack</button>
+            </li>
+            <li class="nav-item">
+                <button onclick="switchTab('menu-pengalaman', this)">💼 Pengalaman</button>
+            </li>
+            <li class="nav-item">
+                <button onclick="switchTab('halaman-kuisoner', this)">📝 Kuesioner Evaluasi</button>
+            </li>
+            <li class="nav-item">
+                <button onclick="switchTab('menu-kontak', this)">📞 Kontak</button>
+            </li>
+        </ul>
+    </aside>
 
-        <div class="btn-navigation-container">
-            <button class="btn-action" onclick="pindahHalaman('halaman-kuisoner')">
-                Selanjutnya -> 
-            </button>
-        </div>
-    </div>
+    <!-- KONTEN UTAMA -->
+    <main class="main-content">
 
-    <!-- HALAMAN KUESIONER -->
-    <div class="page-section" id="halaman-kuisoner">
-        <h1 class="main-title">Kuesioner Evaluasi</h1>
+        <!-- 1. HALAMAN PROFIL -->
+        <section class="page-section active" id="halaman-profil">
+            <h1 class="main-title">Profil Saya</h1>
+            
+            <div class="glass-card" id="profil-card">
+                <h2>NAMA   : MOHAMAD FEBRI ARBIANSYAH</h2>
+                <h2>KELAS  : 01TPLK005</h2>
+                <h2>PRODI  : TEKNIK INFORMATIKA ( S1 ) </h2>
+                <h2>REG    : CK ( KAMIS ) </h2>
+                <p class="subtitle">IT Full Stack Developer | Ex-Network Engineer</p>
 
-        <div class="glass-card">
-            <h2 style="font-size: 1.4rem; margin-bottom: 8px;">Silahkan Isi Kuesioner Ini</h2>
-            <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 15px;">
-                Mohon luangkan waktu sejenak untuk memberikan penilaian secara objektif mengenai tampilan dan kualitas informasi pada halaman profil web ini.
-            </p>
-
-            <div id="alreadyFilledBanner" class="completed-banner" style="display: none;">
-                ⚠️ <strong>Perhatian:</strong> Anda sudah pernah mengisi kuesioner ini. Anda tidak dapat mengirimkan respons ulang.
+                <table class="profil-table">
+                    <tr>
+                        <th>Deskripsi</th>
+                        <td>
+                            Lulusan SMK jurusan Teknik Komputer dan Jaringan (TKJ) yang memiliki fondasi kuat dalam infrastruktur jaringan dan pengembangan perangkat lunak. Saat ini aktif menempuh pendidikan S1 Teknik Informatika di Universitas Pamulang (Reguler CK).<br><br>
+                            Berpengalaman kerja sebagai Network Engineer di salah satu perusahaan di Jakarta, yang memperkuat pemahaman mendalam tentang arsitektur jaringan, sistem keamanan, dan penanganan masalah teknis (troubleshooting). Saat ini berfokus karier sebagai IT Full Stack Developer, mengombinasikan keahlian front-end dan back-end untuk merancang serta mengimplementasikan solusi aplikasi yang responsif, efisien, dan andal.
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Pengalaman Kerja</th>
+                        <td>Network Engineer (Pengelolaan & Pemeliharaan Jaringan Perusahaan)</td>
+                    </tr>
+                    <tr>
+                        <th>Posisi Saat Ini</th>
+                        <td>Full Stack Developer (Pengembangan Sistem & Aplikasi End-to-End)</td>
+                    </tr>
+                    <tr>
+                        <th>Pendidikan</th>
+                        <td>
+                            <ul>
+                                <li>S1 Teknik Informatika – Universitas Pamulang (Sedang Menempuh)</li>
+                                <li>SMK Teknik Komputer dan Jaringan (TKJ)</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Keahlian Utama</th>
+                        <td>Software Development (Front-End-Back-End), Networking & Infrastructure, System Troubleshooting</td>
+                    </tr>
+                </table>
             </div>
 
-            <div class="instruction-box">
-                <strong>Tujuan:</strong> Mengetahui respon pengguna terhadap tampilan, kejelasan informasi karier, dan kemudahan membaca (usability) pada halaman profil web.
-                <div class="likert-scale-guide">
-                    <span>1 = Sangat Tidak Setuju</span>
-                    <span>2 = Tidak Setuju</span>
-                    <span>3 = Netral</span>
-                    <span>4 = Setuju</span>
-                    <span>5 = Sangat Setuju</span>
+            <div class="btn-navigation-container">
+                <button class="btn-action" onclick="switchTab('halaman-kuisoner', document.querySelectorAll('.nav-item button')[4])">
+                    Lanjut Ke Kuesioner -> 
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. MENU PORTOFOLIO PROYEK -->
+        <section class="page-section" id="menu-proyek">
+            <h1 class="main-title">Portofolio Proyek</h1>
+            <div class="grid-cards">
+                <div class="card-item">
+                    <h3>Web Evaluasi Portofolio</h3>
+                    <p>Sistem kuesioner interaktif terintegrasi database Supabase secara real-time.</p>
+                    <div class="tech-badge-container">
+                        <span class="tech-badge">HTML/CSS</span>
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">Supabase</span>
+                    </div>
+                </div>
+                <div class="card-item">
+                    <h3>Sistem Infrastruktur Jaringan</h3>
+                    <p>Perancangan topologi jaringan & konfigurasi router mikrotik/cisco perusahaan.</p>
+                    <div class="tech-badge-container">
+                        <span class="tech-badge">Networking</span>
+                        <span class="tech-badge">Mikrotik</span>
+                        <span class="tech-badge">VPN</span>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <form id="kuesionerForm">
-                
-                <!-- IDENTITAS PENGISI -->
-                <div class="question-item" id="identity_container">
-                    <div class="question-title" style="font-weight: 600; color: #38bdf8;">Identitas Pengisi Kuesioner:</div>
-                    
-                    <div class="form-grid">
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">Nama Lengkap <span style="color: #f43f5e;">*</span></label>
-                            <input type="text" id="user_nama" class="text-input-field" placeholder="Masukkan Nama Lengkap" required>
+        <!-- 3. MENU TECH STACK -->
+        <section class="page-section" id="menu-tech">
+            <h1 class="main-title">Keahlian & Tech Stack</h1>
+            <div class="glass-card">
+                <h3 style="color: #38bdf8; margin-bottom: 10px;">Software Development</h3>
+                <div class="tech-badge-container" style="margin-bottom: 25px;">
+                    <span class="tech-badge">HTML5</span>
+                    <span class="tech-badge">CSS3 / Flexbox</span>
+                    <span class="tech-badge">JavaScript ES6</span>
+                    <span class="tech-badge">Node.js</span>
+                    <span class="tech-badge">PostgreSQL / Supabase</span>
+                </div>
+
+                <h3 style="color: #38bdf8; margin-bottom: 10px;">Jaringan & Sistem</h3>
+                <div class="tech-badge-container">
+                    <span class="tech-badge">Network Troubleshooting</span>
+                    <span class="tech-badge">Routing & Switching</span>
+                    <span class="tech-badge">LAN/WAN/VPN</span>
+                    <span class="tech-badge">Linux Server</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MENU PENGALAMAN -->
+        <section class="page-section" id="menu-pengalaman">
+            <h1 class="main-title">Pengalaman Kerja</h1>
+            <div class="glass-card">
+                <h3 style="color: #38bdf8;">Network Engineer</h3>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">Perusahaan Jakarta</p>
+                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">
+                    Bertanggung jawab atas pemeliharaan jaringan, troubleshooting konektivitas, instalasi perangkat keras, dan memastikan stabilitas infrastruktur TI harian.
+                </p>
+            </div>
+        </section>
+
+        <!-- 5. HALAMAN KUESIONER -->
+        <section class="page-section" id="halaman-kuisoner">
+            <h1 class="main-title">Kuesioner Evaluasi</h1>
+
+            <div class="glass-card">
+                <h2 style="font-size: 1.4rem; margin-bottom: 8px;">Silahkan Isi Kuesioner Ini</h2>
+                <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 15px;">
+                    Mohon luangkan waktu sejenak untuk memberikan penilaian secara objektif mengenai tampilan dan kualitas informasi pada halaman profil web ini.
+                </p>
+
+                <div id="alreadyFilledBanner" class="completed-banner" style="display: none;">
+                    ⚠️ <strong>Perhatian:</strong> Anda sudah pernah mengisi kuesioner ini. Anda tidak dapat mengirimkan respons ulang.
+                </div>
+
+                <div class="instruction-box">
+                    <strong>Tujuan:</strong> Mengetahui respon pengguna terhadap tampilan, kejelasan informasi karier, dan kemudahan membaca (usability) pada halaman profil web.
+                    <div class="likert-scale-guide">
+                        <span>1 = Sangat Tidak Setuju</span>
+                        <span>2 = Tidak Setuju</span>
+                        <span>3 = Netral</span>
+                        <span>4 = Setuju</span>
+                        <span>5 = Sangat Setuju</span>
+                    </div>
+                </div>
+
+                <form id="kuesionerForm">
+                    <!-- IDENTITAS PENGISI -->
+                    <div class="question-item" id="identity_container">
+                        <div class="question-title" style="font-weight: 600; color: #38bdf8;">Identitas Pengisi Kuesioner:</div>
+                        <div class="form-grid">
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">Nama Lengkap <span style="color: #f43f5e;">*</span></label>
+                                <input type="text" id="user_nama" class="text-input-field" placeholder="Masukkan Nama Lengkap" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">NIM <span style="color: #f43f5e;">*</span></label>
+                                <input type="text" id="user_nim" class="text-input-field" placeholder="Masukkan NIM" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">Kelas <span style="color: #f43f5e;">*</span></label>
+                                <input type="text" id="user_kelas" class="text-input-field" placeholder="Contoh: 01TPLK005" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">Program Studi <span style="color: #f43f5e;">*</span></label>
+                                <input type="text" id="user_prodi" class="text-input-field" placeholder="Contoh: Teknik Informatika" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">Reguler <span style="color: #f43f5e;">*</span></label>
+                                <input type="text" id="user_reguler" class="text-input-field" placeholder="Contoh: CK (Kamis)" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.85rem; color: #cbd5e1;">Alamat Email <span style="color: #f43f5e;">*</span></label>
+                                <input type="email" id="user_email" class="text-input-field" placeholder="nama@email.com" required>
+                            </div>
                         </div>
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">NIM <span style="color: #f43f5e;">*</span></label>
-                            <input type="text" id="user_nim" class="text-input-field" placeholder="Masukkan NIM" required>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">Kelas <span style="color: #f43f5e;">*</span></label>
-                            <input type="text" id="user_kelas" class="text-input-field" placeholder="Contoh: 01TPLK005" required>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">Program Studi <span style="color: #f43f5e;">*</span></label>
-                            <input type="text" id="user_prodi" class="text-input-field" placeholder="Contoh: Teknik Informatika" required>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">Reguler <span style="color: #f43f5e;">*</span></label>
-                            <input type="text" id="user_reguler" class="text-input-field" placeholder="Contoh: CK (Kamis)" required>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.85rem; color: #cbd5e1;">Alamat Email <span style="color: #f43f5e;">*</span></label>
-                            <input type="email" id="user_email" class="text-input-field" placeholder="nama@email.com" required>
+                    </div>
+
+                    <!-- SOAL LIKERT 1-9 -->
+                    <div class="question-item" id="q1_container">
+                        <div class="question-title">1. Desain & Animasi: Desain visual web (termasuk efek gradient background bergerak dan kartu transparan/glassmorphism) terlihat menarik dan modern.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q1" value="1" id="q1_1"><label for="q1_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q1" value="2" id="q1_2"><label for="q1_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q1" value="3" id="q1_3"><label for="q1_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q1" value="4" id="q1_4"><label for="q1_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q1" value="5" id="q1_5"><label for="q1_5">5</label></div>
                         </div>
                     </div>
-                </div>
 
-                <div class="question-item" id="q1_container">
-                    <div class="question-title">1. Desain & Animasi: Desain visual web (termasuk efek gradient background bergerak dan kartu transparan/glassmorphism) terlihat menarik dan modern.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q1" value="1" id="q1_1"><label for="q1_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q1" value="2" id="q1_2"><label for="q1_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q1" value="3" id="q1_3"><label for="q1_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q1" value="4" id="q1_4"><label for="q1_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q1" value="5" id="q1_5"><label for="q1_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q2_container">
-                    <div class="question-title">2. Keterbacaan Teks: Kombinasi warna teks dan latar belakang terasa nyaman di mata serta mudah dibaca.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q2" value="1" id="q2_1"><label for="q2_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q2" value="2" id="q2_2"><label for="q2_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q2" value="3" id="q2_3"><label for="q2_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q2" value="4" id="q2_4"><label for="q2_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q2" value="5" id="q2_5"><label for="q2_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q3_container">
-                    <div class="question-title">3. Tata Letak (Layout): Penataan posisi judul, sub-judul, dan tabel profil tersusun secara rapi dan konsisten.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q3" value="1" id="q3_1"><label for="q3_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q3" value="2" id="q3_2"><label for="q3_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q3" value="3" id="q3_3"><label for="q3_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q3" value="4" id="q3_4"><label for="q3_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q3" value="5" id="q3_5"><label for="q3_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q4_container">
-                    <div class="question-title">4. Responsivitas: Tampilan web dapat menyesuaikan diri dengan baik di berbagai ukuran layar (HP / Laptop / Tablet).</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q4" value="1" id="q4_1"><label for="q4_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q4" value="2" id="q4_2"><label for="q4_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q4" value="3" id="q4_3"><label for="q4_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q4" value="4" id="q4_4"><label for="q4_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q4" value="5" id="q4_5"><label for="q4_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q5_container">
-                    <div class="question-title">5. Kejelasan Informasi Profil: Latar belakang pendidikan dan transisi karier dari Network Engineer ke Full Stack Developer tersampaikan dengan sangat jelas.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q5" value="1" id="q5_1"><label for="q5_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q5" value="2" id="q5_2"><label for="q5_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q5" value="3" id="q5_3"><label for="q5_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q5" value="4" id="q5_4"><label for="q5_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q5" value="5" id="q5_5"><label for="q5_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q6_container">
-                    <div class="question-title">6. Kejelasan Keahlian Utama: Ringkasan keahlian utama (Software Development, Networking, Troubleshooting) mudah dipahami.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q6" value="1" id="q6_1"><label for="q6_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q6" value="2" id="q6_2"><label for="q6_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q6" value="3" id="q6_3"><label for="q6_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q6" value="4" id="q6_4"><label for="q6_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q6" value="5" id="q6_5"><label for="q6_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q7_container">
-                    <div class="question-title">7. Format Penyajian Tabel: Penyajian ringkasan profil dalam format tabel memudahkan pembaca dalam memindai (scan) informasi penting.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q7" value="1" id="q7_1"><label for="q7_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q7" value="2" id="q7_2"><label for="q7_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q7" value="3" id="q7_3"><label for="q7_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q7" value="4" id="q7_4"><label for="q7_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q7" value="5" id="q7_5"><label for="q7_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q8_container">
-                    <div class="question-title">8. Kesan Profesionalisme: Halaman profil ini memberikan kesan yang profesional untuk sebuah portofolio kandidat IT.</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q8" value="1" id="q8_1"><label for="q8_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q8" value="2" id="q8_2"><label for="q8_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q8" value="3" id="q8_3"><label for="q8_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q8" value="4" id="q8_4"><label for="q8_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q8" value="5" id="q8_5"><label for="q8_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q9_container">
-                    <div class="question-title">9. Kecepatan Memahami: Pengguna dapat memahami siapa pemilik profil dan kualifikasinya secara cepat (dibawah 1 menit).</div>
-                    <div class="rating-options">
-                        <div class="rating-btn"><input type="radio" name="q9" value="1" id="q9_1"><label for="q9_1">1</label></div>
-                        <div class="rating-btn"><input type="radio" name="q9" value="2" id="q9_2"><label for="q9_2">2</label></div>
-                        <div class="rating-btn"><input type="radio" name="q9" value="3" id="q9_3"><label for="q9_3">3</label></div>
-                        <div class="rating-btn"><input type="radio" name="q9" value="4" id="q9_4"><label for="q9_4">4</label></div>
-                        <div class="rating-btn"><input type="radio" name="q9" value="5" id="q9_5"><label for="q9_5">5</label></div>
-                    </div>
-                </div>
-
-                <div class="question-item" id="q10_container">
-                    <div class="question-title">10. Rekomendasi Fitur Tambahan: Fitur/elemen apa yang perlu ditambahkan agar web profil ini semakin lengkap? (Pilih satu atau lebih)</div>
-                    
-                    <div class="checkbox-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="q10_option" value="Showcase Portofolio Proyek"> Showcase Portofolio Proyek / Aplikasi
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="q10_option" value="Tombol Kontak Langsung"> Tombol Kontak Langsung (WhatsApp/LinkedIn)
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="q10_option" value="Fitur Unduh CV"> Fitur Unduh CV (PDF)
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="q10_option" value="Mode Terang / Gelap"> Toggle Light/Dark Mode
-                        </label>
+                    <div class="question-item" id="q2_container">
+                        <div class="question-title">2. Keterbacaan Teks: Kombinasi warna teks dan latar belakang terasa nyaman di mata serta mudah dibaca.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q2" value="1" id="q2_1"><label for="q2_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q2" value="2" id="q2_2"><label for="q2_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q2" value="3" id="q2_3"><label for="q2_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q2" value="4" id="q2_4"><label for="q2_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q2" value="5" id="q2_5"><label for="q2_5">5</label></div>
+                        </div>
                     </div>
 
-                    <input type="text" class="text-input-field" id="q10_catatan" placeholder="Saran/Masukan tambahan lainnya (opsional)...">
-                </div>
+                    <div class="question-item" id="q3_container">
+                        <div class="question-title">3. Tata Letak (Layout): Penataan posisi judul, sub-judul, dan tabel profil tersusun secara rapi dan konsisten.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q3" value="1" id="q3_1"><label for="q3_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q3" value="2" id="q3_2"><label for="q3_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q3" value="3" id="q3_3"><label for="q3_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q3" value="4" id="q3_4"><label for="q3_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q3" value="5" id="q3_5"><label for="q3_5">5</label></div>
+                        </div>
+                    </div>
 
-                <div class="btn-navigation-container" style="gap: 15px; margin-top: 30px;">
-                    <button type="button" class="btn-action btn-secondary" onclick="pindahHalaman('halaman-profil')">
-                        <- Kembali ke Profil
-                    </button>
-                    <button type="submit" id="submitBtn" class="btn-action">
-                        Kirim Kuesioner
-                    </button>
-                </div>
+                    <div class="question-item" id="q4_container">
+                        <div class="question-title">4. Responsivitas: Tampilan web dapat menyesuaikan diri dengan baik di berbagai ukuran layar (HP / Laptop / Tablet).</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q4" value="1" id="q4_1"><label for="q4_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q4" value="2" id="q4_2"><label for="q4_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q4" value="3" id="q4_3"><label for="q4_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q4" value="4" id="q4_4"><label for="q4_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q4" value="5" id="q4_5"><label for="q4_5">5</label></div>
+                        </div>
+                    </div>
 
-            </form>
-        </div>
-    </div>
+                    <div class="question-item" id="q5_container">
+                        <div class="question-title">5. Kejelasan Informasi Profil: Latar belakang pendidikan dan transisi karier dari Network Engineer ke Full Stack Developer tersampaikan dengan sangat jelas.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q5" value="1" id="q5_1"><label for="q5_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q5" value="2" id="q5_2"><label for="q5_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q5" value="3" id="q5_3"><label for="q5_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q5" value="4" id="q5_4"><label for="q5_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q5" value="5" id="q5_5"><label for="q5_5">5</label></div>
+                        </div>
+                    </div>
+
+                    <div class="question-item" id="q6_container">
+                        <div class="question-title">6. Kejelasan Keahlian Utama: Ringkasan keahlian utama (Software Development, Networking, Troubleshooting) mudah dipahami.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q6" value="1" id="q6_1"><label for="q6_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q6" value="2" id="q6_2"><label for="q6_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q6" value="3" id="q6_3"><label for="q6_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q6" value="4" id="q6_4"><label for="q6_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q6" value="5" id="q6_5"><label for="q6_5">5</label></div>
+                        </div>
+                    </div>
+
+                    <div class="question-item" id="q7_container">
+                        <div class="question-title">7. Format Penyajian Tabel: Penyajian ringkasan profil dalam format tabel memudahkan pembaca dalam memindai (scan) informasi penting.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q7" value="1" id="q7_1"><label for="q7_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q7" value="2" id="q7_2"><label for="q7_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q7" value="3" id="q7_3"><label for="q7_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q7" value="4" id="q7_4"><label for="q7_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q7" value="5" id="q7_5"><label for="q7_5">5</label></div>
+                        </div>
+                    </div>
+
+                    <div class="question-item" id="q8_container">
+                        <div class="question-title">8. Kesan Profesionalisme: Halaman profil ini memberikan kesan yang profesional untuk sebuah portofolio kandidat IT.</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q8" value="1" id="q8_1"><label for="q8_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q8" value="2" id="q8_2"><label for="q8_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q8" value="3" id="q8_3"><label for="q8_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q8" value="4" id="q8_4"><label for="q8_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q8" value="5" id="q8_5"><label for="q8_5">5</label></div>
+                        </div>
+                    </div>
+
+                    <div class="question-item" id="q9_container">
+                        <div class="question-title">9. Kecepatan Memahami: Pengguna dapat memahami siapa pemilik profil dan kualifikasinya secara cepat (dibawah 1 menit).</div>
+                        <div class="rating-options">
+                            <div class="rating-btn"><input type="radio" name="q9" value="1" id="q9_1"><label for="q9_1">1</label></div>
+                            <div class="rating-btn"><input type="radio" name="q9" value="2" id="q9_2"><label for="q9_2">2</label></div>
+                            <div class="rating-btn"><input type="radio" name="q9" value="3" id="q9_3"><label for="q9_3">3</label></div>
+                            <div class="rating-btn"><input type="radio" name="q9" value="4" id="q9_4"><label for="q9_4">4</label></div>
+                            <div class="rating-btn"><input type="radio" name="q9" value="5" id="q9_5"><label for="q9_5">5</label></div>
+                        </div>
+                    </div>
+
+                    <div class="question-item" id="q10_container">
+                        <div class="question-title">10. Rekomendasi Fitur Tambahan: Fitur/elemen apa yang perlu ditambahkan agar web profil ini semakin lengkap? (Pilih satu atau lebih)</div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" name="q10_option" value="Showcase Portofolio Proyek"> Showcase Portofolio Proyek / Aplikasi</label>
+                            <label class="checkbox-item"><input type="checkbox" name="q10_option" value="Tombol Kontak Langsung"> Tombol Kontak Langsung (WhatsApp/LinkedIn)</label>
+                            <label class="checkbox-item"><input type="checkbox" name="q10_option" value="Fitur Unduh CV"> Fitur Unduh CV (PDF)</label>
+                            <label class="checkbox-item"><input type="checkbox" name="q10_option" value="Mode Terang / Gelap"> Toggle Light/Dark Mode</label>
+                        </div>
+                        <input type="text" class="text-input-field" id="q10_catatan" placeholder="Saran/Masukan tambahan lainnya (opsional)...">
+                    </div>
+
+                    <div class="btn-navigation-container" style="gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn-action btn-secondary" onclick="switchTab('halaman-profil', document.querySelectorAll('.nav-item button')[0])">
+                            <- Kembali ke Profil
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-action">
+                            Kirim Kuesioner
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 6. MENU KONTAK -->
+        <section class="page-section" id="menu-kontak">
+            <h1 class="main-title">Hubungi Saya</h1>
+            <div class="glass-card">
+                <p style="color: #cbd5e1; margin-bottom: 15px;">Tertarik untuk berkolaborasi atau ada pertanyaan?</p>
+                <p>📧 Email: <strong>febri.arbiansyah@example.com</strong></p>
+                <p style="margin-top: 10px;">💼 LinkedIn: <strong>linkedin.com/in/febri-arbiansyah</strong></p>
+            </div>
+        </section>
+
+    </main>
 
 </div>
 
@@ -704,10 +890,21 @@
         periksaStatusPengisian();
     });
 
+    // NAVIGATION TABS
+    function switchTab(sectionId, btnElement) {
+        document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.nav-item button').forEach(btn => btn.classList.remove('active'));
+
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        if (btnElement) btnElement.classList.add('active');
+    }
+
     function periksaStatusPengisian() {
-        const sudahMengisi = localStorage.getItem('kuesioner_selesai');
-        if (sudahMengisi) {
-            pindahHalaman('halaman-kuisoner');
+        if (localStorage.getItem('kuesioner_selesai')) {
             disableForm();
         }
     }
@@ -715,10 +912,7 @@
     function disableForm() {
         const form = document.getElementById('kuesionerForm');
         const elements = form.querySelectorAll('input, button[type="submit"]');
-        
-        elements.forEach(el => {
-            el.disabled = true;
-        });
+        elements.forEach(el => el.disabled = true);
 
         const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) {
@@ -728,24 +922,10 @@
         }
 
         const banner = document.getElementById('alreadyFilledBanner');
-        if (banner) {
-            banner.style.display = 'block';
-        }
+        if (banner) banner.style.display = 'block';
     }
 
-    function pindahHalaman(idHalaman) {
-        const sections = document.querySelectorAll('.page-section');
-        sections.forEach(sec => {
-            sec.classList.remove('active');
-        });
-
-        const targetSection = document.getElementById(idHalaman);
-        if (targetSection) {
-            targetSection.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }
-
+    // FORM SUBMISSION LOGIC
     document.getElementById('kuesionerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -754,7 +934,6 @@
             return;
         }
 
-        // Ambil Data Identitas
         const userNama = document.getElementById('user_nama').value.trim();
         const userNim = document.getElementById('user_nim').value.trim();
         const userKelas = document.getElementById('user_kelas').value.trim();
@@ -767,9 +946,7 @@
         let answeredLikertCount = 0;
         let ratings = {};
 
-        document.querySelectorAll('.question-item').forEach(item => {
-            item.classList.remove('has-error');
-        });
+        document.querySelectorAll('.question-item').forEach(item => item.classList.remove('has-error'));
 
         for (let i = 1; i <= 9; i++) {
             const selectedRating = document.querySelector(`input[name="q${i}"]:checked`);
@@ -788,9 +965,7 @@
 
         if (!isValid) {
             const firstError = document.querySelector('.has-error');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -806,32 +981,30 @@
         submitBtn.innerText = 'Mengirim...';
 
         try {
-            // Pengiriman data ke Supabase
+            // Menggunakan variabel global _supabase dari file config/supabase.js
             const { data, error } = await _supabase
                 .from('kuesioner_responses')
-                .insert([
-                    {
-                        nama: userNama,
-                        nim: userNim,
-                        kelas: userKelas,
-                        prodi: userProdi,
-                        reguler: userReguler,
-                        email: userEmail,
-                        q1: ratings.q1,
-                        q2: ratings.q2,
-                        q3: ratings.q3,
-                        q4: ratings.q4,
-                        q5: ratings.q5,
-                        q6: ratings.q6,
-                        q7: ratings.q7,
-                        q8: ratings.q8,
-                        q9: ratings.q9,
-                        q10_options: selectedCheckboxes,
-                        q10_catatan: catatanQ10,
-                        total_score: totalScore,
-                        average_score: averageScore
-                    }
-                ]);
+                .insert([{
+                    nama: userNama,
+                    nim: userNim,
+                    kelas: userKelas,
+                    prodi: userProdi,
+                    reguler: userReguler,
+                    email: userEmail,
+                    q1: ratings.q1,
+                    q2: ratings.q2,
+                    q3: ratings.q3,
+                    q4: ratings.q4,
+                    q5: ratings.q5,
+                    q6: ratings.q6,
+                    q7: ratings.q7,
+                    q8: ratings.q8,
+                    q9: ratings.q9,
+                    q10_options: selectedCheckboxes,
+                    q10_catatan: catatanQ10,
+                    total_score: totalScore,
+                    average_score: averageScore
+                }]);
 
             if (error) throw error;
 
@@ -841,18 +1014,17 @@
             
             const feedbackElem = document.getElementById('feedbackCategory');
             if (averageScore >= 4.5) {
-                feedbackElem.innerHTML = "Luar biasa! Penilaian Anda sangat positif. Terima kasih atas masukan dan dukungan Anda terhadap web profil ini!";
+                feedbackElem.innerHTML = "Luar biasa! Penilaian Anda sangat positif. Terima kasih atas masukan dan dukungan Anda!";
             } else if (averageScore >= 3.5) {
-                feedbackElem.innerHTML = "Terima kasih banyak! Penilaian Anda sangat membantu untuk penyempurnaan desain dan informasi di masa mendatang.";
+                feedbackElem.innerHTML = "Terima kasih banyak! Penilaian Anda sangat membantu untuk penyempurnaan desain.";
             } else {
-                feedbackElem.innerHTML = "Terima kasih atas penilaian dan evaluasinya. Masukan Anda akan dijadikan bahan evaluasi utama untuk pembaruan web profil ini.";
+                feedbackElem.innerHTML = "Terima kasih atas penilaiannya. Masukan Anda akan dijadikan bahan evaluasi utama.";
             }
 
             localStorage.setItem('kuesioner_selesai', 'true');
             disableForm();
 
-            const modal = document.getElementById('resultModal');
-            modal.classList.add('active');
+            document.getElementById('resultModal').classList.add('active');
 
         } catch (err) {
             alert('Gagal mengirim data: ' + err.message);
@@ -862,16 +1034,9 @@
     });
 
     function tutupModal() {
-        const modal = document.getElementById('resultModal');
-        modal.classList.remove('active');
-        
-        pindahHalaman('halaman-kuisoner');
+        document.getElementById('resultModal').classList.remove('active');
+        switchTab('halaman-profil', document.querySelectorAll('.nav-item button')[0]);
     }
-
-    // --- MENGHUBUNGKAN KE SUPABASE (Ubah 2 string di bawah ini) ---
-    const SUPABASE_URL = 'https://dspshuhlkkpcsvjueuxs.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcHNodWhsa2twY3N2anVldXhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjUyNjYsImV4cCI6MjEwNTUwMTI2Nn0.GNoep5OvJK4CNGORXezakWef6CDk91hdMdTbaLGLrnk';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 
 </body>
